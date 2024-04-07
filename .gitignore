@@ -1,0 +1,27 @@
+# visual studio folders
+.vs*/
+/**/bin
+/**/obj
+/**/packages
+.idea/
+!web/.vscode
+.DS_Store
+**/.history
+*.code-workspace
+
+# resharper
+/**/_ReSharper.Caches
+*.user
+
+# binaries
+*.dll
+*.exe
+*.plx
+/branches.txt
+
+# log file
+*.logx
+
+# others
+*.dbmdl
+*.jfm
