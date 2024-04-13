@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MultiThreading.Task3.MatrixMultiplier.Matrices;
 using MultiThreading.Task3.MatrixMultiplier.Multipliers;
@@ -8,6 +9,8 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
     [TestClass]
     public class MultiplierTest
     {
+        Stopwatch watch = new Stopwatch();
+
         [TestMethod]
         public void MultiplyMatrix3On3Test()
         {
@@ -18,8 +21,22 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
         [TestMethod]
         public void ParallelEfficiencyTest()
         {
-            // todo: implement a test method to check the size of the matrix which makes parallel multiplication more effective than
-            // todo: the regular one
+            var size = 10;
+            var step = 5;
+            long unparallelTime = 0;
+            long parallelTime = 1;
+            var matricesMultiplier = new MatricesMultiplier();
+            var matricesMultiplierParallel = new MatricesMultiplierParallel();
+
+            while (unparallelTime <= parallelTime) {
+                unparallelTime = TestMatrixTime(size, matricesMultiplier);
+                parallelTime = TestMatrixTime(size, matricesMultiplierParallel);
+
+                Console.WriteLine(string.Format("Matrix size = {0}, unparallel time = {1}, parallel time = {2}", size, unparallelTime, parallelTime));
+                size += step;
+            }
+
+            Console.WriteLine(string.Format("Parallel implementation is faster on {0} matrix size", size));
         }
 
         #region private methods
@@ -69,6 +86,22 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
             Assert.AreEqual(109, multiplied.GetElement(2, 0));
             Assert.AreEqual(213, multiplied.GetElement(2, 1));
             Assert.AreEqual(728, multiplied.GetElement(2, 2));
+        }
+
+        long TestMatrixTime(int size, IMatricesMultiplier matrixMultiplier)
+        {
+            watch.Reset();
+
+            var m1 = new Matrix(size, size, true);
+            var m2 = new Matrix(size, size, true);
+
+            watch.Start();
+
+            matrixMultiplier.Multiply(m1, m2);
+
+            watch.Stop();
+
+            return watch.ElapsedMilliseconds;
         }
 
         #endregion
