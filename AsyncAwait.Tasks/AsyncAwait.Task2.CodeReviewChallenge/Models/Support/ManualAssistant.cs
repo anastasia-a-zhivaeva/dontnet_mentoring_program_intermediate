@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using CloudServices.Interfaces;
 
@@ -15,9 +14,13 @@ public class ManualAssistant : IAssistant
         _supportService = supportService ?? throw new ArgumentNullException(nameof(supportService));
     }
 
+    /*
+     * Same problems like in StatisticMiddleware
+     */
     public async Task<string> RequestAssistanceAsync(string requestInfo)
     {
-        try
+        /*
+         * try
         {
             var t = _supportService.RegisterSupportRequestAsync(requestInfo);
             Console.WriteLine(t.Status); // this is for debugging purposes
@@ -29,6 +32,16 @@ public class ManualAssistant : IAssistant
         {
             return await Task.Run(async () =>
                 await Task.FromResult($"Failed to register assistance request. Please try later. {ex.Message}"));
+        }
+         */
+        try
+        {
+            await _supportService.RegisterSupportRequestAsync(requestInfo);
+            return await _supportService.GetSupportInfoAsync(requestInfo);
+        }
+        catch (HttpRequestException ex)
+        {
+            return $"Failed to register assistance request. Please try later. {ex.Message}";
         }
     }
 }
