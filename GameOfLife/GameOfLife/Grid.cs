@@ -38,7 +38,6 @@ namespace GameOfLife
 
             SetRandomPattern();
             InitCellsVisuals();
-            UpdateGraphics();
             
         }
 
@@ -48,8 +47,10 @@ namespace GameOfLife
             for (int i = 0; i < SizeX; i++)
                 for (int j = 0; j < SizeY; j++)
                 {
-                    cells[i, j] = new Cell(i, j, 0, false);
-                    nextGenerationCells[i, j] = new Cell(i, j, 0, false);
+                    cells[i, j].Age = 0;
+                    cells[i, j].IsAlive = false;
+                    nextGenerationCells[i, j].Age = 0;
+                    nextGenerationCells[i, j].IsAlive = false;
                     cellsVisuals[i, j].Fill = Brushes.Gray;
                 }
         }
@@ -57,14 +58,13 @@ namespace GameOfLife
 
         void MouseMove(object sender, MouseEventArgs e)
         {
-            var cellVisual = sender as Ellipse;
-            
-            int i = (int) cellVisual.Margin.Left / 5;
-            int j = (int) cellVisual.Margin.Top / 5;
-            
-
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+                var cellVisual = sender as Ellipse;
+
+                int i = (int)cellVisual.Margin.Left / 5;
+                int j = (int)cellVisual.Margin.Top / 5;
+
                 if (!cells[i, j].IsAlive)
                 {
                     cells[i, j].IsAlive = true;
@@ -138,7 +138,7 @@ namespace GameOfLife
             {
                 for (int j = 0; j < SizeY; j++)
                 {
-//                    nextGenerationCells[i, j] = CalculateNextGeneration(i,j);          // UNOPTIMIZED
+                    // nextGenerationCells[i, j] = CalculateNextGeneration(i,j);          // UNOPTIMIZED
                     CalculateNextGeneration(i, j, ref alive, ref age);   // OPTIMIZED
                     nextGenerationCells[i, j].IsAlive = alive;  // OPTIMIZED
                     nextGenerationCells[i, j].Age = age;  // OPTIMIZED
