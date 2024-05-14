@@ -33,6 +33,21 @@ namespace Expressions.Task3.E3SQueryProvider
 
                 return node;
             }
+
+            if (node.Method.DeclaringType == typeof(string) && (node.Method.Name == "Contains" || node.Method.Name == "StartsWith" || node.Method.Name == "EndsWith" || node.Method.Name == "Equals"))
+            {
+                var leftBracket = node.Method.Name == "Contains" || node.Method.Name == "EndsWith" ? "(*" : "(";
+                var rightBracket = node.Method.Name == "Contains" || node.Method.Name == "StartsWith" ? "*)" : ")";
+
+                var leftNode = node.Object;
+                Visit(leftNode);
+                _resultStringBuilder.Append(leftBracket);
+                var rigthNode = node.Arguments[0];
+                Visit(rigthNode);
+                _resultStringBuilder.Append(rightBracket);
+                return node;
+            }
+
             return base.VisitMethodCall(node);
         }
 
@@ -41,16 +56,20 @@ namespace Expressions.Task3.E3SQueryProvider
             switch (node.NodeType)
             {
                 case ExpressionType.Equal:
-                    if (node.Left.NodeType != ExpressionType.MemberAccess)
-                        throw new NotSupportedException($"Left operand should be property or field: {node.NodeType}");
 
-                    if (node.Right.NodeType != ExpressionType.Constant)
-                        throw new NotSupportedException($"Right operand should be constant: {node.NodeType}");
+                    var isRigthOrder = node.Left.NodeType == ExpressionType.MemberAccess;
+                    var leftNode = isRigthOrder ? node.Left : node.Right;
+                    var rightNode = isRigthOrder ? node.Right : node.Left;
 
-                    Visit(node.Left);
+                    Visit(leftNode);
                     _resultStringBuilder.Append("(");
-                    Visit(node.Right);
+                    Visit(rightNode);
                     _resultStringBuilder.Append(")");
+                    break;
+                case ExpressionType.AndAlso:
+                    Visit(node.Left);
+                    _resultStringBuilder.Append('&');
+                    Visit(node.Right);
                     break;
 
                 default:

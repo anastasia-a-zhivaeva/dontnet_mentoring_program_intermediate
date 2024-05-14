@@ -59,6 +59,17 @@ namespace Expressions.Task3.E3SQueryProvider.Test
         }
 
         [Fact]
+        public void TestMethodEqualsQueryable()
+        {
+            var translator = new ExpressionToFtsRequestTranslator();
+            Expression<Func<IQueryable<EmployeeEntity>, IQueryable<EmployeeEntity>>> expression
+                = query => query.Where(e => e.Workstation.Equals("EPRUIZHW006"));
+
+            string translated = translator.Translate(expression);
+            Assert.Equal("Workstation:(EPRUIZHW006)", translated);
+        }
+
+        [Fact]
         public void TestStartsWith()
         {
             var translator = new ExpressionToFtsRequestTranslator();
