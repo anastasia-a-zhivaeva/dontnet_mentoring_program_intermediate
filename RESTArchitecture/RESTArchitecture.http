@@ -1,0 +1,6 @@
+@RESTArchitecture_HostAddress = http://localhost:5114
+
+GET {{RESTArchitecture_HostAddress}}/restarchitecture/
+Accept: application/json
+
+###
